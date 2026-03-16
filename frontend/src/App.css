@@ -1,0 +1,151 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    color: #fff;
+    background-color: #0d4a83cc;
+}
+
+/*titulo*/
+.title {
+    font-size: 50px;
+    text-align: center;
+    margin-top: 80px;
+    margin-bottom: 20px;
+    font-style: normal;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.subtitle {
+    font-size: 13px;
+    text-align: center;
+    margin-bottom: 40px;
+    color: #fff;
+}
+
+.category-title {
+    font-size: 26px;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+/*container das perguntas*/
+.questions-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.question {
+    border-bottom: 1px solid #fff;
+}
+
+.category-title {
+    font-size: 26px;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 10px;
+    font-weight: 700;
+    width: 100%;
+    display: flex;
+}
+
+.question button {
+    width: 100%;
+    background: transparent;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 15px;
+    border: none;
+    outline: none;
+    font-size: 22px;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.question p {
+    font-size: 22px;
+    max-height: 0;
+    opacity: 0;
+    line-height: 1.5;
+    overflow: hidden;
+    transition: all 0.6s ease;
+}
+
+.d-arrow {
+    transition: transform 0.5s ease-in;
+    color: #fff;
+}
+
+/*botao pergunta*/
+.question p.show {
+    max-height: 200px;
+    opacity: 1;
+    padding: 0px 15px 30px 15px;
+}
+
+.question button .d-arrow.rotate {
+    transform: rotate(180deg);
+}
+
+/*botao de pesquisa*/
+.search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #0d4a83b6;
+    border-radius: 40px;
+    padding: 10px 20px;
+    margin: 0 auto 20px auto;
+    max-width: 400px;
+    width: fit-content;
+    transition: all 0.5s ease;
+}
+
+.search-input {
+    display: flex;
+    line-height: 40px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-size: 16px;
+    width: 0;
+    transition: width 0.5s ease;
+    font-family: 'Open Sans', sans-serif;
+    padding: 0px 6px;
+    justify-content: center;
+}
+
+.search-input:focus {
+    width: 200px;
+}
+
+.fas.fa-search {
+    line-height: 40px;
+    width: 40px;
+    color: #fff;
+    font-size: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    transition: width 0.5s ease;
+}
+
+.search-container:hover .search-input {
+    width: 240px;
+}
+
+.search-container:hover .fas.fa-search {
+    width: 40px;
+    background: #8fa3b6b6;
+}
