@@ -1,7 +1,42 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from .models import FAQ
 from rest_framework import viewsets
-from .serializers import FAQSerializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import FAQSerializer, UserSerializer
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
+
+#PARTE DO CADASTRO E LOGIN
+
+#registro de usuario
+class UserRegistrationView(APIView):
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Usuário cadastrado."}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#login de usuario
+class LoginView(APIView):
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            return Response({"message": "Login bem-sucedido."}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Credenciais inválidas."}, status=status.HTTP_401_UNAUTHORIZED)
+
+# endpoints para a api
+class FAQViewSet(viewsets.ModelViewSet):
+    queryset = FAQ.objects.all()
+    serializer_class = FAQSerializer
+
+#PARTE DO FAQ
 
 # Listar e criar os FAQs
 def faq_list(request):
@@ -38,5 +73,5 @@ def faq_edit(request, faq_id):
         faq.save()
 
         return redirect('faq_list')
-    
+
     return render(request, 'faq_edit.html', {'faq': faq})
