@@ -8,10 +8,3 @@ class FAQ(models.Model):
 
     def __str__(self):
         return self.pergunta
-
-class Usuario(models.Model):
-    username = models.CharField(max_length=100)
-    email = models.EmailField()
-    primeiro_nome = models.CharField(max_length=100)
-    ultimo_nome = models.CharField(max_length=100)
-    senha = models.CharField(max_length=100)
