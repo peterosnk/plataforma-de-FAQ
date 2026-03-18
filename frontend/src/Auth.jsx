@@ -38,9 +38,10 @@ const Auth = () => {
                             <h2 className="title title-secondary">Criar Conta</h2>
                             <p className="description">Preencha os campos abaixo para criar sua conta</p>
                             <form className="form">
-                                <input type="text" placeholder="Nome Completo" className="input" />
+                                <input type="text" placeholder="Usuário" className="input" />
                                 <input type="email" placeholder="Email" className="input" />
-                                <input type="password" placeholder="Senha" className="input" />
+                                <input type="password1" placeholder="Senha" className="input" />
+                                <input type="password2" placeholder="Confirmar Senha" className="input" />
                                 <button type="button" className="button">Criar Conta</button>
                             </form>
                         </div>
