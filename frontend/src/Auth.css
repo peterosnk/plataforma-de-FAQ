@@ -1,0 +1,187 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap');
+
+.auth-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f0f0f0; /* Fundo branco/cinza claro nas bordas laterais */
+    font-family: 'Open Sans', sans-serif;
+}
+
+.auth-container * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.auth-container .container {
+    position: relative;
+    width: 960px;
+    height: 500px;
+}
+
+.auth-container .content {
+    background-color: #ffffff; /* Fundo branco do cartão central */
+    border-radius: 15px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+    overflow: hidden;
+}
+
+.auth-container .content::before {
+    content: "";
+    position: absolute;
+    background-color: #438bb4;
+    width: 40%;
+    height: 100%;
+    left: 0;
+    z-index: 1;
+    transition: all 0.6s ease-in-out;
+}
+
+/* Quando o Sign Up está ativo, movemos o fundo azul para a direita */
+.auth-container .sign-up-active .content::before {
+    left: 60%;
+}
+
+.auth-container .first-content,
+.auth-container .second-content {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: all 0.6s ease-in-out;
+}
+
+/* Esconde o segundo container por padrão */
+.auth-container .second-content {
+    opacity: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Alternância de visibilidade baseada na classe sign-up-active */
+.auth-container .sign-up-active .first-content {
+    opacity: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.auth-container .sign-up-active .second-content {
+    opacity: 1;
+    z-index: 5;
+    pointer-events: all;
+}
+
+.auth-container .first-collum {
+    z-index: 10;
+    text-align: center;
+    flex: 1 0 auto;
+    width: 40%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.auth-container .second-collum {
+    z-index: 10;
+    text-align: center;
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Estilo Primeira Coluna do Primeiro Container */
+.auth-container .title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-transform: capitalize;
+}
+
+.auth-container .title.title-primary {
+    color: #ffffff;
+}
+
+.auth-container .title.title-secondary {
+    color: #438bb4;
+}
+
+.auth-container .description {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 20px;
+    color: #ffffff;
+    margin-bottom: 10px;
+}
+
+/* Na segunda coluna (formulário), o texto deve ser escuro se o fundo for branco */
+.auth-container .second-collum .description {
+    color: #333;
+}
+
+.auth-container .button {
+    border-radius: 15px;
+    text-transform: uppercase;
+    color: #ffffff;
+    font-size: 10px;
+    padding: 10px 50px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 180px;
+    align-self: center;
+    border: none;
+    margin-top: 1rem;
+    background-color: #438bb4;
+    transition: transform 80ms ease-in;
+}
+
+.auth-container .button:active {
+    transform: scale(0.95);
+}
+
+.auth-container .button.button-primary {
+    background-color: transparent;
+    border: 1px solid #ffffff;
+}
+
+.auth-container .form {
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+    max-width: 300px;
+    align-items: center;
+}
+
+.auth-container .form input {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 100%;
+    outline: none;
+    background-color: #f9f9f9;
+    color: #000000; /* Letras pretas para visibilidade */
+    font-weight: 600;
+}
+
+.auth-container .forgot-password {
+    color: #333;
+    font-size: 14px;
+    text-decoration: none;
+    margin: 10px 0;
+    border-bottom: 1px solid #ccc;
+}
