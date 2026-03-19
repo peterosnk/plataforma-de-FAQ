@@ -4,9 +4,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100vh;
-    background-color: #f0f0f0; /* Fundo branco/cinza claro nas bordas laterais */
+    min-height: 100vh;
+    background-color: #f0f0f0;
     font-family: 'Open Sans', sans-serif;
+    padding: 40px 20px; /* Padding extra para evitar colar nas bordas em desktops menores */
 }
 
 .auth-container * {
@@ -17,23 +18,26 @@
 
 .auth-container .container {
     position: relative;
-    width: 960px;
-    height: 500px;
+    width: 100%;
+    max-width: 960px; /* Limite máximo no desktop */
+    min-height: 550px; /* Aumentado para acomodar o formulário de cadastro */
+    display: flex;
 }
 
 .auth-container .content {
-    background-color: #ffffff; /* Fundo branco do cartão central */
+    background-color: #ffffff;
     border-radius: 15px;
     width: 100%;
-    height: 100%;
+    min-height: 100%;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: stretch; /* Garante que as colunas ocupem toda a altura */
     position: relative;
     box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
-    overflow: hidden;
+    overflow: hidden; /* Mantém as animações dentro do card */
 }
 
+/* Fundo azul deslizante */
 .auth-container .content::before {
     content: "";
     position: absolute;
@@ -45,7 +49,6 @@
     transition: all 0.6s ease-in-out;
 }
 
-/* Quando o Sign Up está ativo, movemos o fundo azul para a direita */
 .auth-container .sign-up-active .content::before {
     left: 60%;
 }
@@ -54,39 +57,39 @@
 .auth-container .second-content {
     display: flex;
     width: 100%;
-    height: 100%;
+    min-height: 100%;
     position: absolute;
     top: 0;
     left: 0;
     transition: all 0.6s ease-in-out;
 }
 
-/* Esconde o segundo container por padrão */
 .auth-container .second-content {
     opacity: 0;
     z-index: 0;
     pointer-events: none;
+    transform: translateX(20px); /* Leve efeito de movimento */
 }
 
-/* Alternância de visibilidade baseada na classe sign-up-active */
 .auth-container .sign-up-active .first-content {
     opacity: 0;
     z-index: 0;
     pointer-events: none;
+    transform: translateX(-20px);
 }
 
 .auth-container .sign-up-active .second-content {
     opacity: 1;
     z-index: 5;
     pointer-events: all;
+    transform: translateX(0);
 }
 
 .auth-container .first-collum {
     z-index: 10;
     text-align: center;
-    flex: 1 0 auto;
     width: 40%;
-    padding: 20px;
+    padding: 40px 20px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -101,14 +104,13 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 20px;
+    padding: 40px 20px;
 }
 
-/* Estilo Primeira Coluna do Primeiro Container */
 .auth-container .title {
     font-size: 28px;
     font-weight: bold;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     text-transform: capitalize;
 }
 
@@ -123,22 +125,21 @@
 .auth-container .description {
     font-size: 14px;
     font-weight: 300;
-    line-height: 20px;
+    line-height: 24px;
     color: #ffffff;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
-/* Na segunda coluna (formulário), o texto deve ser escuro se o fundo for branco */
 .auth-container .second-collum .description {
     color: #333;
 }
 
 .auth-container .button {
-    border-radius: 15px;
+    border-radius: 25px;
     text-transform: uppercase;
     color: #ffffff;
-    font-size: 10px;
-    padding: 10px 50px;
+    font-size: 12px;
+    padding: 12px 40px;
     cursor: pointer;
     font-weight: bold;
     width: 180px;
@@ -146,7 +147,11 @@
     border: none;
     margin-top: 1rem;
     background-color: #438bb4;
-    transition: transform 80ms ease-in;
+    transition: all 0.3s ease;
+}
+
+.auth-container .button:hover {
+    filter: brightness(1.1);
 }
 
 .auth-container .button:active {
@@ -155,33 +160,103 @@
 
 .auth-container .button.button-primary {
     background-color: transparent;
-    border: 1px solid #ffffff;
+    border: 2px solid #ffffff;
 }
 
 .auth-container .form {
     display: flex;
     flex-direction: column;
-    width: 70%;
-    max-width: 300px;
+    width: 100%;
+    max-width: 320px;
     align-items: center;
 }
 
 .auth-container .form input {
     margin-bottom: 15px;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
     width: 100%;
     outline: none;
     background-color: #f9f9f9;
-    color: #000000; /* Letras pretas para visibilidade */
+    color: #000000;
     font-weight: 600;
+    font-size: 15px;
+    transition: border-color 0.3s;
+}
+
+.auth-container .form input:focus {
+    border-color: #438bb4;
 }
 
 .auth-container .forgot-password {
-    color: #333;
+    color: #666;
     font-size: 14px;
     text-decoration: none;
     margin: 10px 0;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid transparent;
+    transition: color 0.3s;
+}
+
+.auth-container .forgot-password:hover {
+    color: #438bb4;
+    border-bottom: 1px solid #438bb4;
+}
+
+/* RESPONSIVIDADE CELULAR (TELAS MENORES QUE 768PX) */
+@media (max-width: 768px) {
+    .auth-container {
+        padding: 10px;
+    }
+
+    .auth-container .container {
+        min-height: auto;
+        height: auto;
+    }
+
+    .auth-container .content {
+        flex-direction: column;
+        height: auto;
+        min-height: auto;
+        overflow: visible; /* Permite crescer conforme o conteúdo */
+    }
+
+    .auth-container .content::before {
+        display: none; /* Remove a animação do fundo no mobile */
+    }
+
+    .auth-container .first-content,
+    .auth-container .second-content {
+        position: relative; /* No mobile, eles ficam um embaixo do outro no DOM (mas um é oculto via React) */
+        flex-direction: column;
+        height: auto;
+        opacity: 1; /* React controla qual div renderiza */
+        transform: none !important;
+    }
+
+    .auth-container .first-collum,
+    .auth-container .second-collum {
+        width: 100%;
+        padding: 40px 20px;
+    }
+
+    /* Cores fixas no mobile para manter contraste */
+    .auth-container .first-collum {
+        background-color: #438bb4;
+        order: 2; /* Mensagem informativa fica embaixo */
+    }
+
+    .auth-container .second-collum {
+        order: 1; /* Formulário fica em cima */
+        background-color: #ffffff;
+    }
+
+    .auth-container .title {
+        font-size: 24px;
+    }
+
+    /* Ocultar a div que não está ativa no mobile de forma absoluta para não ocupar espaço */
+    .auth-container .second-content:not(.sign-up-active .second-content) {
+        display: none;
+    }
 }

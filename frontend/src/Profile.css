@@ -1,16 +1,18 @@
 .profile-container {
-    height: 100vh;
+    min-height: calc(100vh - 80px); /* Ajusta para a altura da navbar */
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #f0f0f0; /* Fundo branco/cinza claro nas bordas laterais */
+    background-color: #f0f0f0;
     font-family: 'Open Sans', sans-serif;
+    padding: 20px;
 }
 
 .profile-card {
-    background-color: #ffffff; /* Fundo branco do cartão central */
+    background-color: #ffffff;
     border-radius: 15px;
-    width: 600px;
+    width: 100%;
+    max-width: 600px;
     padding: 40px;
     box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
     display: flex;
@@ -25,13 +27,13 @@
 
 .profile-header .title {
     font-size: 32px;
-    color: #438bb4; /* Título azul de destaque */
+    color: #438bb4;
     margin-bottom: 10px;
 }
 
 .profile-header .subtitle {
     font-size: 14px;
-    color: #666; /* Subtítulo cinza */
+    color: #666;
 }
 
 .profile-form {
@@ -58,7 +60,7 @@
     border-radius: 8px;
     border: 1px solid #ccc;
     background-color: #f9f9f9;
-    color: #000000; /* Letras pretas para visibilidade */
+    color: #000000;
     font-size: 16px;
     outline: none;
     transition: border-color 0.3s;
@@ -130,4 +132,30 @@
     font-size: 14px;
     margin-top: 15px;
     text-align: center;
+}
+
+/* RESPONSIVIDADE PROFILE */
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 10px;
+        min-height: auto;
+    }
+
+    .profile-card {
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+    .profile-header .title {
+        font-size: 24px;
+    }
+
+    .profile-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .profile-button {
+        width: 100%;
+    }
 }
