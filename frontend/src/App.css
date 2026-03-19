@@ -180,3 +180,21 @@ body {
     color: #0d4a83;
 }
 
+.logout-nav {
+    background: transparent;
+    border: 2px solid #dc3545 !important;
+    color: #dc3545 !important;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+.logout-nav:hover {
+    background: #dc3545 !important;
+    color: white !important;
+}
+
+

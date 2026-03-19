@@ -1,11 +1,22 @@
 import React, { useState } from 'react';
 import './Auth.css';
 
-const Auth = () => {
+const Auth = ({ onAuthSuccess }) => {
     const [isSignIn, setIsSignIn] = useState(true);
 
     const toggleAuth = () => {
         setIsSignIn(!isSignIn);
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        // Simulação de autenticação com dados genéricos
+        const userData = {
+            username: isSignIn ? 'usuario_teste' : 'novo_usuario',
+            email: 'teste@exemplo.com',
+            password: 'senha123'
+        };
+        onAuthSuccess(userData);
     };
 
     return (
@@ -23,11 +34,11 @@ const Auth = () => {
                         <div className="second-collum">
                             <h2 className="title title-secondary">Fazer Login</h2>
                             <p className="description">Preencha os campos abaixo para fazer login</p>
-                            <form className="form">
-                                <input type="email" placeholder="Email" className="input" />
-                                <input type="password" placeholder="Senha" className="input" />
+                            <form className="form" onSubmit={handleSubmit}>
+                                <input type="email" placeholder="Email" className="input" required />
+                                <input type="password" placeholder="Senha" className="input" required />
                                 <a href="#" className="forgot-password">Esqueci minha senha</a>
-                                <button type="button" className="button">Fazer Login</button>
+                                <button type="submit" className="button">Fazer Login</button>
                             </form>
                         </div>
                     </div>
@@ -37,12 +48,12 @@ const Auth = () => {
                         <div className="second-collum">
                             <h2 className="title title-secondary">Criar Conta</h2>
                             <p className="description">Preencha os campos abaixo para criar sua conta</p>
-                            <form className="form">
-                                <input type="text" placeholder="Usuário" className="input" />
-                                <input type="email" placeholder="Email" className="input" />
-                                <input type="password1" placeholder="Senha" className="input" />
-                                <input type="password2" placeholder="Confirmar Senha" className="input" />
-                                <button type="button" className="button">Criar Conta</button>
+                            <form className="form" onSubmit={handleSubmit}>
+                                <input type="text" placeholder="Usuário" className="input" required />
+                                <input type="email" placeholder="Email" className="input" required />
+                                <input type="password" placeholder="Senha" className="input" required />
+                                <input type="password" placeholder="Confirmar Senha" className="input" required />
+                                <button type="submit" className="button">Criar Conta</button>
                             </form>
                         </div>
                         <div className="first-collum">

@@ -1,0 +1,133 @@
+.profile-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0; /* Fundo branco/cinza claro nas bordas laterais */
+    font-family: 'Open Sans', sans-serif;
+}
+
+.profile-card {
+    background-color: #ffffff; /* Fundo branco do cartão central */
+    border-radius: 15px;
+    width: 600px;
+    padding: 40px;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile-header {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.profile-header .title {
+    font-size: 32px;
+    color: #438bb4; /* Título azul de destaque */
+    margin-bottom: 10px;
+}
+
+.profile-header .subtitle {
+    font-size: 14px;
+    color: #666; /* Subtítulo cinza */
+}
+
+.profile-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 700;
+    color: #438bb4;
+}
+
+.form-group input {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    color: #000000; /* Letras pretas para visibilidade */
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s;
+    font-weight: 600;
+}
+
+.form-group input:focus {
+    border-color: #438bb4;
+}
+
+.form-group input:disabled {
+    background-color: #eee;
+    cursor: not-allowed;
+    color: #333;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    width: 100%;
+}
+
+.profile-button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 25px;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 12px;
+    transition: transform 0.2s, background-color 0.3s;
+}
+
+.profile-button:active {
+    transform: scale(0.95);
+}
+
+.profile-button.edit {
+    background-color: #438bb4;
+    color: white;
+}
+
+.profile-button.save {
+    background-color: #28a745;
+    color: white;
+}
+
+.profile-button.cancel {
+    background-color: #dc3545;
+    color: white;
+}
+
+.profile-button.logout {
+    background-color: transparent;
+    border: 1px solid #dc3545;
+    color: #dc3545;
+    margin-top: 20px;
+}
+
+.profile-button.logout:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+.success-message {
+    color: #28a745;
+    font-size: 14px;
+    margin-top: 15px;
+    text-align: center;
+}
