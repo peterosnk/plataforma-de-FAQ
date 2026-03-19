@@ -5,12 +5,12 @@ import Profile from './Profile';
 import './App.css';
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('faq');
-  const [user, setUser] = useState(null); // Estado do usuário logado
+  const [currentPage, setCurrentPage] = useState('auth');
+  const [user, setUser] = useState(null);
 
   const handleAuthSuccess = (userData) => {
     setUser(userData);
-    setCurrentPage('faq'); // Redireciona para o FAQ após login
+    setCurrentPage('faq');
   };
 
   const handleUpdateUser = (updatedData) => {
@@ -18,6 +18,7 @@ function App() {
   };
 
   const handleLogout = () => {
+    localStorage.removeItem("token");
     setUser(null);
     setCurrentPage('faq');
   };
@@ -27,7 +28,14 @@ function App() {
       <nav className="main-nav">
         <button 
           className={currentPage === 'faq' ? 'active' : ''} 
-          onClick={() => setCurrentPage('faq')}
+          onClick={() => {
+            if (user) {
+              setCurrentPage('faq');
+            }
+            else {
+              alert("Faça login para acessar o FAQ.");
+            }
+          }}
         >
           FAQ
         </button>
@@ -55,7 +63,7 @@ function App() {
       </nav>
 
       <main>
-        {currentPage === 'faq' && <FAQ />}
+        {currentPage === 'faq' && user && <FAQ />}
         {currentPage === 'auth' && !user && <Auth onAuthSuccess={handleAuthSuccess} />}
         {currentPage === 'profile' && user && (
           <Profile 

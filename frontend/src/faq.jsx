@@ -1,34 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const FAQ = () => {
   const [activeIndex, setActiveIndex] = useState(null);
+  const [questions, setQuestions] = useState([]);
 
   const toggleQuestion = (index) => {
     setActiveIndex(activeIndex === index ? null : index);
   };
 
-  const questions = [
-    {
-      category: 'LOCALIZAÇÃO',
-      question: 'Onde fica localizada a ZPE?',
-      answer: 'A ZPE Piauí está localizada em Parnaíba, no litoral do estado.',
-    },
-    {
-      category: 'SERVIÇOS',
-      question: 'Como faço para entrar em contato?',
-      answer: 'Você pode entrar em contato conosco através do e-mail contato@zpepiaui.pi.gov.br ou pelo telefone (86) 3323-1234.',
-    },
-    {
-      category: 'INFORMAÇÕES',
-      question: 'Quais as vantagens de se instalar na ZPE?',
-      answer: 'As empresas instaladas em ZPE contam com suspensão de impostos federais na importação e na aquisição no mercado interno de bens de capital e de matérias-primas.',
-    },
-  ];
+  //BUSCA OS DADOS DO BACKEND
+  useEffect(() => {
+    const fetchFaqs = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/api/faqs/", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+          }
+        });
+
+        const data = await response.json();
+
+        // adapta os dados do Django pro formato do seu layout
+        const formatted = data.map(item => ({
+          category: "FAQ",
+          question: item.pergunta,
+          answer: item.solucao
+        }));
+
+        setQuestions(formatted);
+
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchFaqs();
+  }, []);
 
   return (
     <section>
       <h1 className="title">PERGUNTAS FREQUENTES</h1>
-      <h5 className="subtitle">Encontre abaixo as respostas para as perguntas mais frequentes. Se não encontrar o que procura, entre em contato conosco.</h5>
+      <h5 className="subtitle">
+        Encontre abaixo as respostas para as perguntas mais frequentes. 
+        Se não encontrar o que procura, entre em contato conosco.
+      </h5>
       
       <div className="search-container">
         <input type="text" className="search-input" placeholder="Pesquise sua dúvida..." />
@@ -39,11 +55,15 @@ const FAQ = () => {
         {questions.map((item, index) => (
           <div key={index} className="question">
             <h3 className="category-title">{item.category}</h3>
+
             <button onClick={() => toggleQuestion(index)}>
               <span>{item.question}</span>
               <i className={`fas fa-chevron-down d-arrow ${activeIndex === index ? 'rotate' : ''}`}></i>
             </button>
-            <p className={activeIndex === index ? 'show' : ''}>{item.answer}</p>
+
+            <p className={activeIndex === index ? 'show' : ''}>
+              {item.answer}
+            </p>
           </div>
         ))}
       </div>
