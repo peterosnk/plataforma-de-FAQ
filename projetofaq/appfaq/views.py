@@ -24,12 +24,18 @@ class LoginView(APIView):
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
+
         user = authenticate(request, username=username, password=password)
         
         if user is not None:
-            return Response({"message": "Login bem-sucedido."}, status=status.HTTP_200_OK)
+            return Response({"success": True,
+                             "username": user.username,
+                             "id": user.id,
+                            }, status=status.HTTP_200_OK)
         else:
-            return Response({"error": "Credenciais inválidas."}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"success": False,
+                             "error": "Credenciais inválidas."
+                            }, status=status.HTTP_401_UNAUTHORIZED)
 
 # endpoints para a api
 class FAQViewSet(viewsets.ModelViewSet):
