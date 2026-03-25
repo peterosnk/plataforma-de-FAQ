@@ -28,6 +28,7 @@ ChartJS.register(
 const Dashboard = () => {
   // Estado para os dados do Dashboard
   const [perguntas, setPerguntas] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
   const [stats, setStats] = useState({
     total_faqs: 0,
     total_users: 0,
@@ -50,6 +51,11 @@ const Dashboard = () => {
       const faqsRes = await fetch('http://localhost:8000/api/faqs/');
       const faqsData = await faqsRes.json();
       setPerguntas(faqsData);
+
+      // Busca lista de Usuários
+      const usersRes = await fetch('http://localhost:8000/api/users/');
+      const usersData = await usersRes.json();
+      setUsuarios(usersData);
     } catch (error) {
       console.error("Erro ao carregar dados do Dashboard:", error);
     } finally {
@@ -108,20 +114,16 @@ const Dashboard = () => {
   };
 
   // Funções de Ação
-  const editarPergunta = (id) => {
-    alert(`Editar pergunta #${id}\n\nFuncionalidade em desenvolvimento para conectar com o endpoint de edição.`);
+  const editarItem = (id, tipo) => {
+    alert(`Editar ${tipo} #${id}\n\nFuncionalidade em desenvolvimento.`);
   };
 
   const excluirPergunta = async (id) => {
     if (window.confirm(`Tem certeza que deseja excluir a pergunta #${id}?\n\nEsta ação não pode ser desfeita.`)) {
       try {
-        const res = await fetch(`http://localhost:8000/delete/${id}/`, {
-          method: 'POST', // O seu backend usa POST no faq_delete atual
-          // Nota: Como estamos em desenvolvimento, o CSRF pode ser um problema aqui
-          // Idealmente, usaríamos uma API RESTful completa com DELETE
+        await fetch(`http://localhost:8000/delete/${id}/`, {
+          method: 'POST',
         });
-        
-        // Atualiza a lista local após exclusão
         setPerguntas(perguntas.filter(p => p.id !== id));
         alert(`Pergunta #${id} excluída com sucesso!`);
       } catch (error) {
@@ -134,7 +136,7 @@ const Dashboard = () => {
     return (
       <div className="dashboard-container">
         <div className="dashboard-content-wrapper" style={{textAlign: 'center', paddingTop: '100px'}}>
-          <h2 style={{color: 'white'}}>Carregando dados do Dashboard...</h2>
+          <h2 style={{color: '#0d4a83'}}>Carregando dados do Dashboard...</h2>
         </div>
       </div>
     );
@@ -183,7 +185,7 @@ const Dashboard = () => {
           </div>
         </section>
 
-        {/* Tabela de Dados */}
+        {/* Tabela de Perguntas */}
         <section className="dashboard-table-section">
           <h2>Últimas Perguntas Cadastradas</h2>
           <table className="dashboard-data-table">
@@ -191,8 +193,6 @@ const Dashboard = () => {
               <tr>
                 <th>ID</th>
                 <th>Pergunta</th>
-                <th>Data</th>
-                <th>Visualizações</th>
                 <th>Ações</th>
               </tr>
             </thead>
@@ -201,12 +201,10 @@ const Dashboard = () => {
                 <tr key={item.id}>
                   <td>#{item.id}</td>
                   <td>{item.pergunta}</td>
-                  <td>-</td> {/* Data não existe no modelo atual */}
-                  <td>-</td> {/* Visualizações não existe no modelo atual */}
                   <td>
                     <button 
                       className="dashboard-edit-btn" 
-                      onClick={() => editarPergunta(item.id)} 
+                      onClick={() => editarItem(item.id, 'pergunta')} 
                       title="Editar"
                     >
                       ✏️
@@ -215,6 +213,48 @@ const Dashboard = () => {
                       className="dashboard-delete-btn" 
                       onClick={() => excluirPergunta(item.id)} 
                       title="Excluir"
+                    >
+                      🗑️
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+
+        {/* Tabela de Usuários */}
+        <section className="dashboard-table-section">
+          <h2>Gestão de Usuários</h2>
+          <table className="dashboard-data-table">
+            <thead>
+              <tr>
+                <th>Usuário</th>
+                <th>Email</th>
+                <th>Data de Cadastro</th>
+                <th>Última Vez Online</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {usuarios.map((user, index) => (
+                <tr key={index}>
+                  <td>{user.username}</td>
+                  <td>{user.email}</td>
+                  <td>{user.date_joined}</td>
+                  <td>{user.last_login}</td>
+                  <td>
+                    <button 
+                      className="dashboard-edit-btn" 
+                      onClick={() => editarItem(user.username, 'usuário')} 
+                      title="Editar"
+                    >
+                      ✏️
+                    </button>
+                    <button 
+                      className="dashboard-delete-btn" 
+                      title="Excluir"
+                      onClick={() => alert('Funcionalidade de excluir usuário em desenvolvimento.')}
                     >
                       🗑️
                     </button>
