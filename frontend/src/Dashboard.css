@@ -1,0 +1,243 @@
+/* Dashboard.css */
+
+.dashboard-container {
+    max-width: 100%;
+    margin: 0;
+    font-family: 'Open Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
+    min-height: 100vh;
+    background-color: #f0f0f0; /* Fundo igual ao Login */
+}
+
+.dashboard-content-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* ========== HEADER ========== */
+.dashboard-header {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    border-left: 8px solid #0d4a83; /* Destaque com o azul do FAQ */
+}
+
+.dashboard-header-content h1 {
+    color: #0d4a83; /* Azul do FAQ */
+    font-size: 28px;
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+
+.dashboard-header-content .subtitle {
+    color: #0d4a83cc;
+    font-size: 14px;
+}
+
+.dashboard-user-info {
+    font-size: 16px;
+    color: #0d4a83;
+    font-weight: 700;
+}
+
+/* ========== MÉTRICAS ========== */
+.dashboard-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.dashboard-metric-card {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #0d4a831a;
+}
+
+.dashboard-metric-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(13, 74, 131, 0.1);
+}
+
+.dashboard-metric-icon {
+    font-size: 40px;
+    min-width: 50px;
+    color: #0d4a83;
+}
+
+.dashboard-metric-content h3 {
+    color: #0d4a83aa;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.dashboard-metric-value {
+    color: #0d4a83;
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.dashboard-metric-change {
+    color: #27ae60;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* ========== GRÁFICOS ========== */
+.dashboard-charts-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.dashboard-chart-container {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    border: 1px solid #0d4a831a;
+}
+
+.dashboard-chart-container h2 {
+    color: #0d4a83;
+    font-size: 18px;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.dashboard-chart-canvas {
+    max-height: 300px;
+}
+
+/* ========== TABELA ========== */
+.dashboard-table-section {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+    overflow-x: auto;
+    border: 1px solid #0d4a831a;
+}
+
+.dashboard-table-section h2 {
+    color: #0d4a83;
+    font-size: 18px;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.dashboard-data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.dashboard-data-table thead {
+    background: #0d4a8311;
+}
+
+.dashboard-data-table th {
+    padding: 15px;
+    text-align: left;
+    color: #0d4a83;
+    font-weight: 700;
+    border-bottom: 2px solid #0d4a8333;
+}
+
+.dashboard-data-table td {
+    padding: 15px;
+    border-bottom: 1px solid #0d4a8311;
+    color: #0d4a83cc;
+}
+
+.dashboard-data-table tbody tr:hover {
+    background: #0d4a8308;
+}
+
+/* ========== BOTÕES ========== */
+.dashboard-edit-btn, .dashboard-delete-btn {
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    min-width: 40px;
+    background: transparent;
+}
+
+.dashboard-edit-btn:hover, .dashboard-delete-btn:hover {
+    transform: scale(1.1);
+}
+
+.dashboard-edit-btn:hover {
+    box-shadow: 0 4px 8px rgba(13, 74, 131, 0.2);
+}
+
+.dashboard-delete-btn:hover {
+    box-shadow: 0 4px 8px rgba(229, 62, 62, 0.2);
+}
+
+/* ========== FOOTER ========== */
+.dashboard-footer {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    color: #0d4a8388;
+    font-size: 14px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    border: 1px solid #0d4a831a;
+}
+
+.dashboard-footer p {
+    margin: 5px 0;
+}
+
+/* ========== RESPONSIVO ========== */
+@media (max-width: 768px) {
+    .dashboard-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+        border-left: none;
+        border-top: 8px solid #0d4a83;
+    }
+
+    .dashboard-header-content h1 {
+        font-size: 22px;
+    }
+}
+
+/* ========== ANIMAÇÕES ========== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dashboard-metric-card, 
+.dashboard-chart-container, 
+.dashboard-table-section {
+    animation: fadeIn 0.5s ease-out;
+}

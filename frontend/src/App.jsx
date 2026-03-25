@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import FAQ from './faq';
 import Auth from './Auth';
 import Profile from './Profile';
+import Dashboard from './Dashboard';
 import './App.css';
 
 function App() {
@@ -51,6 +52,13 @@ function App() {
           FAQ
         </button>
         
+        <button 
+          className={currentPage === 'dashboard' ? 'active' : ''} 
+          onClick={() => setCurrentPage('dashboard')}
+        >
+          Dashboard
+        </button>
+        
         {user ? (
           <>
             <button 
@@ -75,6 +83,7 @@ function App() {
 
       <main>
         {currentPage === 'faq' && <FAQ />}
+        {currentPage === 'dashboard' && <Dashboard />}
         {currentPage === 'auth' && !user && <Auth onAuthSuccess={handleAuthSuccess} />}
         {currentPage === 'profile' && user && (
           <Profile 
