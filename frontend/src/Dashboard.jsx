@@ -11,6 +11,8 @@ import {
   Filler,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import EditUserModal from './EditUserModal';
+import AddFaqModal from './AddFaqModal';
 import './Dashboard.css';
 
 // Registrando componentes do Chart.js
@@ -37,6 +39,11 @@ const Dashboard = () => {
     chart_data: [0, 0, 0, 0, 0, 0, 0]
   });
   const [loading, setLoading] = useState(true);
+  
+  // Estados para os Modais
+  const [editingUser, setEditingUser] = useState(null); // Para editar ou criar usuário
+  const [showAddFaqModal, setShowAddFaqModal] = useState(false);
+  const [isCreatingUser, setIsCreatingUser] = useState(false);
 
   // Carregar dados do Backend
   const fetchData = async () => {
@@ -113,9 +120,26 @@ const Dashboard = () => {
     },
   };
 
-  // Funções de Ação
-  const editarItem = (id, tipo) => {
-    alert(`Editar ${tipo} #${id}\n\nFuncionalidade em desenvolvimento.`);
+  // Funções de Ação - Perguntas
+  const handleSaveFaq = async (faqData) => {
+    try {
+      const response = await fetch('http://localhost:8000/api/faqs/create/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(faqData),
+      });
+
+      if (response.ok) {
+        alert('Pergunta adicionada com sucesso!');
+        setShowAddFaqModal(false);
+        fetchData();
+      } else {
+        const error = await response.json();
+        alert(`Erro ao criar FAQ: ${error.error}`);
+      }
+    } catch (error) {
+      console.error("Erro ao criar FAQ:", error);
+    }
   };
 
   const excluirPergunta = async (id) => {
@@ -126,9 +150,47 @@ const Dashboard = () => {
         });
         setPerguntas(perguntas.filter(p => p.id !== id));
         alert(`Pergunta #${id} excluída com sucesso!`);
+        fetchData(); // Atualiza contador
       } catch (error) {
         console.error("Erro ao excluir pergunta:", error);
       }
+    }
+  };
+
+  // Funções de Ação - Usuários
+  const handleEditUser = (user) => {
+    setIsCreatingUser(false);
+    setEditingUser(user);
+  };
+
+  const handleAddUser = () => {
+    setIsCreatingUser(true);
+    setEditingUser(null); // Envia null para o modal entender que é criação
+  };
+
+  const handleSaveUser = async (userId, userData) => {
+    const url = userId 
+      ? `http://localhost:8000/api/users/update/${userId}/`
+      : 'http://localhost:8000/api/users/create/';
+    
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      });
+
+      if (response.ok) {
+        alert(userId ? 'Usuário atualizado!' : 'Novo usuário criado!');
+        setEditingUser(null);
+        setIsCreatingUser(false);
+        fetchData();
+      } else {
+        const error = await response.json();
+        alert(`Erro: ${error.error}`);
+      }
+    } catch (error) {
+      console.error("Erro na operação de usuário:", error);
     }
   };
 
@@ -187,7 +249,12 @@ const Dashboard = () => {
 
         {/* Tabela de Perguntas */}
         <section className="dashboard-table-section">
-          <h2>Últimas Perguntas Cadastradas</h2>
+          <div className="table-header-with-action">
+            <h2>Últimas Perguntas Cadastradas</h2>
+            <button className="add-button" onClick={() => setShowAddFaqModal(true)}>
+              <span>+</span> Adicionar Pergunta
+            </button>
+          </div>
           <table className="dashboard-data-table">
             <thead>
               <tr>
@@ -202,20 +269,8 @@ const Dashboard = () => {
                   <td>#{item.id}</td>
                   <td>{item.pergunta}</td>
                   <td>
-                    <button 
-                      className="dashboard-edit-btn" 
-                      onClick={() => editarItem(item.id, 'pergunta')} 
-                      title="Editar"
-                    >
-                      ✏️
-                    </button>
-                    <button 
-                      className="dashboard-delete-btn" 
-                      onClick={() => excluirPergunta(item.id)} 
-                      title="Excluir"
-                    >
-                      🗑️
-                    </button>
+                    <button className="dashboard-edit-btn" title="Editar" onClick={() => alert('Edição de FAQ em breve')}>✏️</button>
+                    <button className="dashboard-delete-btn" title="Excluir" onClick={() => excluirPergunta(item.id)}>🗑️</button>
                   </td>
                 </tr>
               ))}
@@ -225,14 +280,19 @@ const Dashboard = () => {
 
         {/* Tabela de Usuários */}
         <section className="dashboard-table-section">
-          <h2>Gestão de Usuários</h2>
+          <div className="table-header-with-action">
+            <h2>Gestão de Usuários</h2>
+            <button className="add-button" onClick={handleAddUser}>
+              <span>+</span> Adicionar Usuário
+            </button>
+          </div>
           <table className="dashboard-data-table">
             <thead>
               <tr>
                 <th>Usuário</th>
                 <th>Email</th>
+                <th>Cargo</th>
                 <th>Data de Cadastro</th>
-                <th>Última Vez Online</th>
                 <th>Ações</th>
               </tr>
             </thead>
@@ -241,23 +301,15 @@ const Dashboard = () => {
                 <tr key={index}>
                   <td>{user.username}</td>
                   <td>{user.email}</td>
-                  <td>{user.date_joined}</td>
-                  <td>{user.last_login}</td>
                   <td>
-                    <button 
-                      className="dashboard-edit-btn" 
-                      onClick={() => editarItem(user.username, 'usuário')} 
-                      title="Editar"
-                    >
-                      ✏️
-                    </button>
-                    <button 
-                      className="dashboard-delete-btn" 
-                      title="Excluir"
-                      onClick={() => alert('Funcionalidade de excluir usuário em desenvolvimento.')}
-                    >
-                      🗑️
-                    </button>
+                    <span className={`badge ${user.is_staff ? 'badge-admin' : 'badge-visitante'}`}>
+                        {user.is_staff ? 'Administrador' : 'Visitante'}
+                    </span>
+                  </td>
+                  <td>{user.date_joined}</td>
+                  <td>
+                    <button className="dashboard-edit-btn" onClick={() => handleEditUser(user)} title="Editar">✏️</button>
+                    <button className="dashboard-delete-btn" title="Excluir" onClick={() => alert('Exclusão de usuário em breve')}>🗑️</button>
                   </td>
                 </tr>
               ))}
@@ -271,6 +323,22 @@ const Dashboard = () => {
           <p>Última atualização: {new Date().toLocaleDateString('pt-BR')}</p>
         </footer>
       </div>
+
+      {/* Modais */}
+      {(editingUser || isCreatingUser) && (
+        <EditUserModal 
+          user={editingUser} 
+          onClose={() => { setEditingUser(null); setIsCreatingUser(false); }} 
+          onSave={handleSaveUser} 
+        />
+      )}
+
+      {showAddFaqModal && (
+        <AddFaqModal 
+          onClose={() => setShowAddFaqModal(false)} 
+          onSave={handleSaveFaq} 
+        />
+      )}
     </div>
   );
 };
