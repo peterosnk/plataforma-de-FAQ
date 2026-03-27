@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import './Dashboard.css';
 
-const AddFaqModal = ({ onClose, onSave }) => {
+const AddFaqModal = ({ faq, onClose, onSave }) => {
+    // Se houver 'faq', estamos no modo de edição
+    const isEdit = !!faq;
+
     const [formData, setFormData] = useState({
-        pergunta: '',
-        descricao: '',
-        solucao: ''
+        pergunta: faq?.pergunta || '',
+        descricao: faq?.descricao || '',
+        solucao: faq?.solucao || ''
     });
 
     const handleChange = (e) => {
@@ -18,15 +21,17 @@ const AddFaqModal = ({ onClose, onSave }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSave(formData);
+        onSave(isEdit ? faq.id : null, formData);
     };
 
     return (
         <div className="modal-overlay">
             <div className="modal-content profile-card">
                 <header className="profile-header">
-                    <h2 className="title">Nova Pergunta</h2>
-                    <p className="subtitle">Cadastre uma nova dúvida no FAQ</p>
+                    <h2 className="title">{isEdit ? 'Editar Pergunta' : 'Nova Pergunta'}</h2>
+                    <p className="subtitle">
+                        {isEdit ? 'Atualize as informações do FAQ' : 'Cadastre uma nova dúvida no FAQ'}
+                    </p>
                 </header>
 
                 <form onSubmit={handleSubmit} className="profile-form">
@@ -72,7 +77,7 @@ const AddFaqModal = ({ onClose, onSave }) => {
 
                     <div className="profile-actions">
                         <button type="submit" className="profile-button save">
-                            Salvar FAQ
+                            {isEdit ? 'Salvar Alterações' : 'Criar FAQ'}
                         </button>
                         <button type="button" className="profile-button cancel" onClick={onClose}>
                             Cancelar

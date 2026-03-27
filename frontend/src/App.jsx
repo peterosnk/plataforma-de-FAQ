@@ -52,12 +52,14 @@ function App() {
           FAQ
         </button>
         
-        <button 
-          className={currentPage === 'dashboard' ? 'active' : ''} 
-          onClick={() => setCurrentPage('dashboard')}
-        >
-          Dashboard
-        </button>
+        {user && user.is_staff && (
+          <button 
+            className={currentPage === 'dashboard' ? 'active' : ''} 
+            onClick={() => setCurrentPage('dashboard')}
+          >
+            Dashboard
+          </button>
+        )}
         
         {user ? (
           <>

@@ -41,7 +41,8 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   
   // Estados para os Modais
-  const [editingUser, setEditingUser] = useState(null); // Para editar ou criar usuário
+  const [editingUser, setEditingUser] = useState(null); 
+  const [editingFaq, setEditingFaq] = useState(null); // Para editar FAQ
   const [showAddFaqModal, setShowAddFaqModal] = useState(false);
   const [isCreatingUser, setIsCreatingUser] = useState(false);
 
@@ -121,24 +122,34 @@ const Dashboard = () => {
   };
 
   // Funções de Ação - Perguntas
-  const handleSaveFaq = async (faqData) => {
+  const handleEditFaq = (faq) => {
+    setEditingFaq(faq);
+    setShowAddFaqModal(true);
+  };
+
+  const handleSaveFaq = async (faqId, faqData) => {
+    const url = faqId 
+      ? `http://localhost:8000/api/faqs/update/${faqId}/`
+      : 'http://localhost:8000/api/faqs/create/';
+
     try {
-      const response = await fetch('http://localhost:8000/api/faqs/create/', {
+      const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(faqData),
       });
 
       if (response.ok) {
-        alert('Pergunta adicionada com sucesso!');
+        alert(faqId ? 'Pergunta atualizada!' : 'Pergunta adicionada!');
         setShowAddFaqModal(false);
+        setEditingFaq(null);
         fetchData();
       } else {
         const error = await response.json();
-        alert(`Erro ao criar FAQ: ${error.error}`);
+        alert(`Erro: ${error.error}`);
       }
     } catch (error) {
-      console.error("Erro ao criar FAQ:", error);
+      console.error("Erro ao salvar FAQ:", error);
     }
   };
 
@@ -165,7 +176,7 @@ const Dashboard = () => {
 
   const handleAddUser = () => {
     setIsCreatingUser(true);
-    setEditingUser(null); // Envia null para o modal entender que é criação
+    setEditingUser(null); 
   };
 
   const handleSaveUser = async (userId, userData) => {
@@ -251,7 +262,7 @@ const Dashboard = () => {
         <section className="dashboard-table-section">
           <div className="table-header-with-action">
             <h2>Últimas Perguntas Cadastradas</h2>
-            <button className="add-button" onClick={() => setShowAddFaqModal(true)}>
+            <button className="add-button" onClick={() => { setEditingFaq(null); setShowAddFaqModal(true); }}>
               <span>+</span> Adicionar Pergunta
             </button>
           </div>
@@ -269,7 +280,7 @@ const Dashboard = () => {
                   <td>#{item.id}</td>
                   <td>{item.pergunta}</td>
                   <td>
-                    <button className="dashboard-edit-btn" title="Editar" onClick={() => alert('Edição de FAQ em breve')}>✏️</button>
+                    <button className="dashboard-edit-btn" title="Editar" onClick={() => handleEditFaq(item)}>✏️</button>
                     <button className="dashboard-delete-btn" title="Excluir" onClick={() => excluirPergunta(item.id)}>🗑️</button>
                   </td>
                 </tr>
@@ -335,7 +346,8 @@ const Dashboard = () => {
 
       {showAddFaqModal && (
         <AddFaqModal 
-          onClose={() => setShowAddFaqModal(false)} 
+          faq={editingFaq}
+          onClose={() => { setShowAddFaqModal(false); setEditingFaq(null); }} 
           onSave={handleSaveFaq} 
         />
       )}
