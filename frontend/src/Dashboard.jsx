@@ -156,14 +156,39 @@ const Dashboard = () => {
   const excluirPergunta = async (id) => {
     if (window.confirm(`Tem certeza que deseja excluir a pergunta #${id}?\n\nEsta ação não pode ser desfeita.`)) {
       try {
-        await fetch(`http://localhost:8000/delete/${id}/`, {
-          method: 'POST',
+        const response = await fetch(`http://localhost:8000/api/faqs/delete/${id}/`, {
+          method: 'DELETE',
         });
-        setPerguntas(perguntas.filter(p => p.id !== id));
-        alert(`Pergunta #${id} excluída com sucesso!`);
-        fetchData(); // Atualiza contador
+        
+        if (response.ok) {
+          setPerguntas(perguntas.filter(p => p.id !== id));
+          alert(`Pergunta #${id} excluída com sucesso!`);
+          fetchData(); // Atualiza contador
+        } else {
+          alert("Erro ao excluir a pergunta.");
+        }
       } catch (error) {
         console.error("Erro ao excluir pergunta:", error);
+      }
+    }
+  };
+
+  const excluirUsuario = async (userId, username) => {
+    if (window.confirm(`Tem certeza que deseja excluir o usuário "${username}"?\n\nEsta ação não pode ser desfeita.`)) {
+      try {
+        const response = await fetch(`http://localhost:8000/api/users/delete/${userId}/`, {
+          method: 'DELETE',
+        });
+
+        if (response.ok) {
+          setUsuarios(usuarios.filter(u => u.id !== userId));
+          alert(`Usuário "${username}" excluído com sucesso!`);
+          fetchData(); // Atualiza contador
+        } else {
+          alert("Erro ao excluir o usuário.");
+        }
+      } catch (error) {
+        console.error("Erro ao excluir usuário:", error);
       }
     }
   };
@@ -320,7 +345,7 @@ const Dashboard = () => {
                   <td>{user.date_joined}</td>
                   <td>
                     <button className="dashboard-edit-btn" onClick={() => handleEditUser(user)} title="Editar">✏️</button>
-                    <button className="dashboard-delete-btn" title="Excluir" onClick={() => alert('Exclusão de usuário em breve')}>🗑️</button>
+                    <button className="dashboard-delete-btn" title="Excluir" onClick={() => excluirUsuario(user.id, user.username)}>🗑️</button>
                   </td>
                 </tr>
               ))}

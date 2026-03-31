@@ -18,11 +18,34 @@ const Profile = ({ user, onUpdate, onLogout }) => {
         }));
     };
 
-    const handleSave = () => {
-        onUpdate(formData);
-        setIsEditing(false);
-        setMessage('Informações atualizadas com sucesso!');
-        setTimeout(() => setMessage(''), 3000);
+    const handleSave = async () => {
+        try {
+            const response = await fetch(`http://localhost:8000/api/users/update/${user.id}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: formData.username,
+                    email: formData.email,
+                    password: formData.password,
+                    role: user.is_staff ? 'Administrador' : 'Visitante'
+                })
+            });
+
+            if (response.ok) {
+                onUpdate(formData);
+                setIsEditing(false);
+                setMessage('Informações atualizadas com sucesso!');
+                setTimeout(() => setMessage(''), 3000);
+            } else {
+                const data = await response.json();
+                setMessage(`Erro: ${data.error}`);
+            }
+        } catch (err) {
+            console.error('Erro ao atualizar perfil:', err);
+            setMessage('Erro de conexão com o servidor');
+        }
     };
 
     const handleCancel = () => {

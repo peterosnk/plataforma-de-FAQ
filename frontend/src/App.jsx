@@ -7,21 +7,29 @@ import './App.css';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('faq');
-  const [user, setUser] = useState(null); // Estado do usuário logado
+  const [user, setUser] = useState(() => {
+    // Carregar usuário do localStorage se existir
+    const savedUser = localStorage.getItem('faq_user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
   const [showNav, setShowNav] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
   const handleAuthSuccess = (userData) => {
     setUser(userData);
+    localStorage.setItem('faq_user', JSON.stringify(userData));
     setCurrentPage('faq'); // Redireciona para o FAQ após login
   };
 
   const handleUpdateUser = (updatedData) => {
-    setUser(updatedData);
+    const newUser = { ...user, ...updatedData };
+    setUser(newUser);
+    localStorage.setItem('faq_user', JSON.stringify(newUser));
   };
 
   const handleLogout = () => {
     setUser(null);
+    localStorage.removeItem('faq_user');
     setCurrentPage('faq');
   };
 
