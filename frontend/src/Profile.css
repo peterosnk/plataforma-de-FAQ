@@ -27,7 +27,7 @@
 
 .profile-header .title {
     font-size: 32px;
-    color: #438bb4;
+    color: #0d4a83;
     margin-bottom: 10px;
 }
 
@@ -52,7 +52,7 @@
 .form-group label {
     font-size: 14px;
     font-weight: 700;
-    color: #438bb4;
+    color: #0d4a83;
 }
 
 .form-group input {
@@ -68,7 +68,7 @@
 }
 
 .form-group input:focus {
-    border-color: #438bb4;
+    border-color: #0d4a83;
 }
 
 .form-group input:disabled {
@@ -101,7 +101,7 @@
 }
 
 .profile-button.edit {
-    background-color: #438bb4;
+    background-color: #0d4a83;
     color: white;
 }
 

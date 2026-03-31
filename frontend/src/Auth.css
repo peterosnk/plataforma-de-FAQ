@@ -41,7 +41,7 @@
 .auth-container .content::before {
     content: "";
     position: absolute;
-    background-color: #438bb4;
+    background-color: #0d4a83;
     width: 40%;
     height: 100%;
     left: 0;
@@ -119,7 +119,7 @@
 }
 
 .auth-container .title.title-secondary {
-    color: #438bb4;
+    color: #0d4a83;
 }
 
 .auth-container .description {
@@ -146,7 +146,7 @@
     align-self: center;
     border: none;
     margin-top: 1rem;
-    background-color: #438bb4;
+    background-color: #0d4a83;
     transition: all 0.3s ease;
 }
 
@@ -186,7 +186,7 @@
 }
 
 .auth-container .form input:focus {
-    border-color: #438bb4;
+    border-color: #0d4a83;
 }
 
 .auth-container .forgot-password {
@@ -199,8 +199,8 @@
 }
 
 .auth-container .forgot-password:hover {
-    color: #438bb4;
-    border-bottom: 1px solid #438bb4;
+    color: #0d4a83;
+    border-bottom: 1px solid #0d4a83;
 }
 
 /* RESPONSIVIDADE CELULAR (TELAS MENORES QUE 768PX) */
@@ -242,7 +242,7 @@
 
     /* Cores fixas no mobile para manter contraste */
     .auth-container .first-collum {
-        background-color: #438bb4;
+        background-color: #0d4a83;
         order: 2; /* Mensagem informativa fica embaixo */
     }
 
