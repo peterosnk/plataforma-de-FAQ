@@ -10,6 +10,8 @@ const AddFaqModal = ({ faq, onClose, onSave }) => {
         descricao: faq?.descricao || '',
         solucao: faq?.solucao || ''
     });
+    const [file, setFile] = useState(null);
+    const [error, setError] = useState('');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -19,9 +21,34 @@ const AddFaqModal = ({ faq, onClose, onSave }) => {
         }));
     };
 
+    const handleFileChange = (e) => {
+        const selectedFile = e.target.files[0];
+        if (selectedFile) {
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'video/mp4'];
+            if (!allowedTypes.includes(selectedFile.type)) {
+                setError('Formato não suportado. Use JPEG, JPG, PNG ou MP4.');
+                setFile(null);
+                e.target.value = null;
+                return;
+            }
+            // Limite de 100MB (100 * 1024 * 1024 bytes)
+            if (selectedFile.size > 100 * 1024 * 1024) {
+                setError('O arquivo excede o limite de 100MB.');
+                setFile(null);
+                e.target.value = null;
+                return;
+            }
+            setError('');
+            setFile(selectedFile);
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSave(isEdit ? faq.id : null, formData);
+        if (error) return;
+        
+        // Passamos o arquivo separadamente ou dentro de um objeto
+        onSave(isEdit ? faq.id : null, { ...formData, midia: file });
     };
 
     return (
@@ -73,6 +100,22 @@ const AddFaqModal = ({ faq, onClose, onSave }) => {
                             rows="5"
                             style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1.5px solid #0d4a8333', outline: 'none' }}
                         />
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="midia">Anexar Foto ou Vídeo (Opcional)</label>
+                        <input
+                            type="file"
+                            id="midia"
+                            name="midia"
+                            onChange={handleFileChange}
+                            accept=".jpg,.jpeg,.png,.mp4"
+                            style={{ padding: '10px', fontSize: '14px' }}
+                        />
+                        {error && <p style={{ color: 'red', fontSize: '12px', marginTop: '5px' }}>{error}</p>}
+                        <p style={{ color: '#666', fontSize: '11px', marginTop: '5px' }}>
+                            Formatos aceitos: JPG, PNG, MP4. Limite: 100MB.
+                        </p>
                     </div>
 
                     <div className="profile-actions">

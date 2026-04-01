@@ -77,12 +77,15 @@ body {
 
 .question p {
     font-size: 18px;
+    line-height: 1.5;
+    color: #333;
+}
+
+.faq-answer-content {
     max-height: 0;
     opacity: 0;
-    line-height: 1.5;
     overflow: hidden;
     transition: all 0.6s ease;
-    color: #333;
 }
 
 .d-arrow {
@@ -92,9 +95,8 @@ body {
     margin-left: 10px;
 }
 
-/*botao pergunta*/
-.question p.show {
-    max-height: 500px;
+.faq-answer-content.show {
+    max-height: 1000px; /* Aumentado para caber a imagem */
     opacity: 1;
     padding: 0px 15px 30px 15px;
 }

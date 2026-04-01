@@ -20,7 +20,7 @@ const Profile = ({ user, onUpdate, onLogout }) => {
 
     const handleSave = async () => {
         try {
-            const response = await fetch(`http://localhost:8000/api/users/update/${user.id}/`, {
+            const response = await fetch(`http://10.0.0.161:8000/api/users/update/${user.id}/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

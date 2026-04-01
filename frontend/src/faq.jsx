@@ -14,7 +14,7 @@ const FAQ = () => {
   const fetchFaqs = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8000/api/faqs/all/');
+      const response = await fetch('http://10.0.0.161:8000/api/faqs/all/');
       if (response.ok) {
         const data = await response.json();
         setFaqs(data);
@@ -36,6 +36,32 @@ const FAQ = () => {
   const filteredFaqs = faqs.filter(faq =>
     faq.pergunta.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const renderMedia = (midiaUrl) => {
+    if (!midiaUrl) return null;
+
+    // Ajustar URL se necessário (adicionar o host do backend)
+    const fullUrl = midiaUrl.startsWith('http') ? midiaUrl : `http://10.0.0.161:8000${midiaUrl}`;
+    const isVideo = midiaUrl.toLowerCase().endsWith('.mp4');
+
+    return (
+      <div className="faq-media-container" style={{ marginTop: '15px', textAlign: 'center' }}>
+        {isVideo ? (
+          <video controls style={{ maxWidth: '100%', borderRadius: '8px', maxHeight: '400px' }}>
+            <source src={fullUrl} type="video/mp4" />
+            Seu navegador não suporta vídeos.
+          </video>
+        ) : (
+          <img 
+            src={fullUrl} 
+            alt="Mídia da FAQ" 
+            style={{ maxWidth: '100%', borderRadius: '8px', cursor: 'pointer', maxHeight: '400px', objectFit: 'contain' }}
+            onClick={() => window.open(fullUrl, '_blank')}
+          />
+        )}
+      </div>
+    );
+  };
 
   return (
     <section id="faq">
@@ -64,7 +90,10 @@ const FAQ = () => {
                 <span>{item.pergunta}</span>
                 <i className={`fas fa-chevron-down d-arrow ${activeIndex === index ? 'rotate' : ''}`}></i>
               </button>
-              <p className={activeIndex === index ? 'show' : ''}>{item.solucao}</p>
+              <div className={`faq-answer-content ${activeIndex === index ? 'show' : ''}`}>
+                  <p>{item.solucao}</p>
+                  {renderMedia(item.midia)}
+                </div>
             </div>
           ))
         ) : (

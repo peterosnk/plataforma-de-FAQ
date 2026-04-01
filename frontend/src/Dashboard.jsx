@@ -11,9 +11,67 @@ import {
   Filler,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import {
+  DndContext, 
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import EditUserModal from './EditUserModal';
 import AddFaqModal from './AddFaqModal';
+import DeleteConfirmationModal from './DeleteConfirmationModal';
 import './Dashboard.css';
+
+// Componente para a linha arrastável da tabela
+const SortableFaqRow = ({ item, handleEditFaq, excluirPergunta }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging
+  } = useSortable({ id: item.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 1000 : 1,
+    opacity: isDragging ? 0.5 : 1,
+    background: isDragging ? '#f0f7ff' : 'transparent'
+  };
+
+  return (
+    <tr ref={setNodeRef} style={style}>
+      <td>#{item.id}</td>
+      <td>{item.pergunta}</td>
+      <td>
+        <div className="dashboard-actions-cell">
+          <button 
+            className="dashboard-drag-handle" 
+            title="Arrastar para reordenar"
+            {...attributes} 
+            {...listeners}
+          >
+            <i className="fas fa-grip-vertical"></i>
+          </button>
+          <button className="dashboard-edit-btn" title="Editar" onClick={() => handleEditFaq(item)}>✏️</button>
+          <button className="dashboard-delete-btn" title="Excluir" onClick={() => excluirPergunta(item.id)}>🗑️</button>
+        </div>
+      </td>
+    </tr>
+  );
+};
 
 // Registrando componentes do Chart.js
 ChartJS.register(
@@ -39,6 +97,18 @@ const Dashboard = () => {
     chart_data: [0, 0, 0, 0, 0, 0, 0]
   });
   const [loading, setLoading] = useState(true);
+
+  // Sensores para o Drag and Drop
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // 8px de movimento para começar a arrastar
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
   
   // Estados para os Modais
   const [editingUser, setEditingUser] = useState(null); 
@@ -46,22 +116,31 @@ const Dashboard = () => {
   const [showAddFaqModal, setShowAddFaqModal] = useState(false);
   const [isCreatingUser, setIsCreatingUser] = useState(false);
 
+  // Estados para o Modal de Confirmação de Exclusão
+  const [deleteModal, setDeleteModal] = useState({
+    isOpen: false,
+    type: null, // 'faq' ou 'user'
+    id: null,
+    title: '',
+    message: ''
+  });
+
   // Carregar dados do Backend
   const fetchData = async () => {
     try {
       setLoading(true);
       // Busca estatísticas
-      const statsRes = await fetch('http://localhost:8000/api/stats/');
+      const statsRes = await fetch('http://10.0.0.161:8000/api/stats/');
       const statsData = await statsRes.json();
       setStats(statsData);
 
       // Busca lista de FAQs
-      const faqsRes = await fetch('http://localhost:8000/api/faqs/');
+      const faqsRes = await fetch('http://10.0.0.161:8000/api/faqs/');
       const faqsData = await faqsRes.json();
       setPerguntas(faqsData);
 
       // Busca lista de Usuários
-      const usersRes = await fetch('http://localhost:8000/api/users/');
+      const usersRes = await fetch('http://10.0.0.161:8000/api/users/');
       const usersData = await usersRes.json();
       setUsuarios(usersData);
     } catch (error) {
@@ -127,16 +206,60 @@ const Dashboard = () => {
     setShowAddFaqModal(true);
   };
 
+  const handleDragEnd = async (event) => {
+    const { active, over } = event;
+
+    if (active.id !== over.id) {
+      const oldIndex = perguntas.findIndex((p) => p.id === active.id);
+      const newIndex = perguntas.findIndex((p) => p.id === over.id);
+
+      const newOrderedList = arrayMove(perguntas, oldIndex, newIndex);
+      setPerguntas(newOrderedList);
+
+      // Salvar a nova ordem no backend
+      const faqsWithNewOrder = newOrderedList.map((faq, index) => ({
+        id: faq.id,
+        ordem: index
+      }));
+
+      try {
+        const response = await fetch('http://10.0.0.161:8000/api/faqs/reorder/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ faqs: faqsWithNewOrder }),
+        });
+        
+        if (!response.ok) {
+          throw new Error('Erro ao salvar nova ordem');
+        }
+      } catch (error) {
+        console.error("Erro ao salvar nova ordem:", error);
+        alert("Erro ao salvar a nova ordem das perguntas.");
+        fetchData(); // Reverte para a ordem do servidor em caso de erro
+      }
+    }
+  };
+
   const handleSaveFaq = async (faqId, faqData) => {
     const url = faqId 
-      ? `http://localhost:8000/api/faqs/update/${faqId}/`
-      : 'http://localhost:8000/api/faqs/create/';
+      ? `http://10.0.0.161:8000/api/faqs/update/${faqId}/`
+      : 'http://10.0.0.161:8000/api/faqs/create/';
 
     try {
+      // Usar FormData para enviar arquivos
+      const formData = new FormData();
+      formData.append('pergunta', faqData.pergunta);
+      formData.append('descricao', faqData.descricao);
+      formData.append('solucao', faqData.solucao);
+      
+      if (faqData.midia) {
+        formData.append('midia', faqData.midia);
+      }
+
       const response = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(faqData),
+        // Não definimos o Content-Type ao enviar FormData, o navegador faz isso automaticamente com o boundary correto
+        body: formData,
       });
 
       if (response.ok) {
@@ -153,43 +276,50 @@ const Dashboard = () => {
     }
   };
 
-  const excluirPergunta = async (id) => {
-    if (window.confirm(`Tem certeza que deseja excluir a pergunta #${id}?\n\nEsta ação não pode ser desfeita.`)) {
-      try {
-        const response = await fetch(`http://localhost:8000/api/faqs/delete/${id}/`, {
-          method: 'DELETE',
-        });
-        
-        if (response.ok) {
-          setPerguntas(perguntas.filter(p => p.id !== id));
-          alert(`Pergunta #${id} excluída com sucesso!`);
-          fetchData(); // Atualiza contador
-        } else {
-          alert("Erro ao excluir a pergunta.");
-        }
-      } catch (error) {
-        console.error("Erro ao excluir pergunta:", error);
-      }
-    }
+  const excluirPergunta = (id) => {
+    setDeleteModal({
+      isOpen: true,
+      type: 'faq',
+      id: id,
+      title: 'Excluir Pergunta',
+      message: `Tem certeza que deseja excluir a pergunta #${id}? Esta ação não pode ser desfeita.`
+    });
   };
 
-  const excluirUsuario = async (userId, username) => {
-    if (window.confirm(`Tem certeza que deseja excluir o usuário "${username}"?\n\nEsta ação não pode ser desfeita.`)) {
-      try {
-        const response = await fetch(`http://localhost:8000/api/users/delete/${userId}/`, {
-          method: 'DELETE',
-        });
+  const excluirUsuario = (userId, username) => {
+    setDeleteModal({
+      isOpen: true,
+      type: 'user',
+      id: userId,
+      title: 'Excluir Usuário',
+      message: `Tem certeza que deseja excluir o usuário "${username}"? Esta ação não pode ser desfeita.`
+    });
+  };
 
-        if (response.ok) {
-          setUsuarios(usuarios.filter(u => u.id !== userId));
-          alert(`Usuário "${username}" excluído com sucesso!`);
-          fetchData(); // Atualiza contador
+  const confirmDelete = async () => {
+    const { type, id } = deleteModal;
+    const url = type === 'faq' 
+      ? `http://10.0.0.161:8000/api/faqs/delete/${id}/`
+      : `http://10.0.0.161:8000/api/users/delete/${id}/`;
+
+    try {
+      const response = await fetch(url, {
+        method: 'DELETE',
+      });
+      
+      if (response.ok) {
+        if (type === 'faq') {
+          setPerguntas(perguntas.filter(p => p.id !== id));
         } else {
-          alert("Erro ao excluir o usuário.");
+          setUsuarios(usuarios.filter(u => u.id !== id));
         }
-      } catch (error) {
-        console.error("Erro ao excluir usuário:", error);
+        fetchData();
+        setDeleteModal({ ...deleteModal, isOpen: false });
+      } else {
+        alert(`Erro ao excluir o ${type === 'faq' ? 'pergunta' : 'usuário'}.`);
       }
+    } catch (error) {
+      console.error(`Erro ao excluir ${type}:`, error);
     }
   };
 
@@ -206,8 +336,8 @@ const Dashboard = () => {
 
   const handleSaveUser = async (userId, userData) => {
     const url = userId 
-      ? `http://localhost:8000/api/users/update/${userId}/`
-      : 'http://localhost:8000/api/users/create/';
+      ? `http://10.0.0.161:8000/api/users/update/${userId}/`
+      : 'http://10.0.0.161:8000/api/users/create/';
     
     try {
       const response = await fetch(url, {
@@ -291,27 +421,36 @@ const Dashboard = () => {
               <span>+</span> Adicionar Pergunta
             </button>
           </div>
-          <table className="dashboard-data-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Pergunta</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {perguntas.map((item) => (
-                <tr key={item.id}>
-                  <td>#{item.id}</td>
-                  <td>{item.pergunta}</td>
-                  <td>
-                    <button className="dashboard-edit-btn" title="Editar" onClick={() => handleEditFaq(item)}>✏️</button>
-                    <button className="dashboard-delete-btn" title="Excluir" onClick={() => excluirPergunta(item.id)}>🗑️</button>
-                  </td>
+          <DndContext 
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <table className="dashboard-data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Pergunta</th>
+                  <th>Ações</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <SortableContext 
+                items={perguntas.map(p => p.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <tbody>
+                  {perguntas.map((item) => (
+                    <SortableFaqRow 
+                      key={item.id} 
+                      item={item} 
+                      handleEditFaq={handleEditFaq} 
+                      excluirPergunta={excluirPergunta} 
+                    />
+                  ))}
+                </tbody>
+              </SortableContext>
+            </table>
+          </DndContext>
         </section>
 
         {/* Tabela de Usuários */}
@@ -376,6 +515,14 @@ const Dashboard = () => {
           onSave={handleSaveFaq} 
         />
       )}
+
+      <DeleteConfirmationModal 
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ ...deleteModal, isOpen: false })}
+        onConfirm={confirmDelete}
+        title={deleteModal.title}
+        message={deleteModal.message}
+      />
     </div>
   );
 };

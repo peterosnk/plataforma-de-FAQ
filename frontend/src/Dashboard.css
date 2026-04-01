@@ -170,7 +170,7 @@
 }
 
 /* ========== BOTÕES ========== */
-.dashboard-edit-btn, .dashboard-delete-btn {
+.dashboard-edit-btn, .dashboard-delete-btn, .dashboard-drag-handle {
     border: none;
     padding: 8px 12px;
     border-radius: 6px;
@@ -181,7 +181,27 @@
     background: transparent;
 }
 
-.dashboard-edit-btn:hover, .dashboard-delete-btn:hover {
+.dashboard-drag-handle {
+    cursor: grab;
+    color: #0d4a8388;
+}
+
+.dashboard-drag-handle:active {
+    cursor: grabbing;
+}
+
+.dashboard-drag-handle:hover {
+    color: #0d4a83;
+    transform: scale(1.1);
+}
+
+.dashboard-actions-cell {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.dashboard-edit-btn:hover, .dashboard-delete-btn:hover, .dashboard-drag-handle:hover {
     transform: scale(1.1);
 }
 
@@ -344,6 +364,107 @@
     .dashboard-header-content h1 {
         font-size: 22px;
     }
+}
+
+/* ========== MODAL DE EXCLUSÃO ========== */
+.delete-modal {
+    max-width: 400px !important;
+    text-align: center;
+    padding: 40px 30px;
+}
+
+.delete-icon-container {
+    width: 80px;
+    height: 80px;
+    background-color: #fff5f5;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 20px;
+}
+
+.warning-icon {
+    font-size: 40px;
+    color: #e53e3e;
+}
+
+.delete-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 30px;
+    width: 100%;
+}
+
+.delete-confirm {
+    background-color: #e53e3e !important;
+    color: white !important;
+    border: none !important;
+}
+
+.delete-confirm:hover {
+    background-color: #c53030 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(229, 62, 62, 0.2);
+}
+
+.profile-card {
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+
+.profile-header {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.profile-header .title {
+    font-size: 24px;
+    color: #0d4a83;
+    margin-bottom: 10px;
+}
+
+.profile-header .subtitle {
+    font-size: 14px;
+    color: #666;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.profile-button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 25px;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 12px;
+    transition: all 0.3s ease;
+}
+
+.profile-button.cancel {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.profile-button.cancel:hover {
+    background-color: #e0e0e0;
+}
+
+.profile-button.save {
+    background-color: #0d4a83;
+    color: white;
+}
+
+.profile-button.save:hover {
+    background-color: #0a3a66;
 }
 
 /* ========== ANIMAÇÕES ========== */
