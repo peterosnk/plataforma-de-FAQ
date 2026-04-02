@@ -1,5 +1,7 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from .models import FAQ
+from django.db import models
+from django.db.models import Max
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -72,7 +74,7 @@ def dashboard_stats(request):
 
 @api_view(['GET'])
 def faq_api_list(request):
-    faqs = FAQ.objects.all().order_by('-id')[:5] # Pegar as 5 últimas
+    faqs = FAQ.objects.all().order_by('ordem') # Pegar todos para reordenar
     serializer = FAQSerializer(faqs, many=True)
     return Response(serializer.data)
 
@@ -115,11 +117,23 @@ def update_user_api(request, user_id):
 @api_view(['POST'])
 def create_faq_api(request):
     try:
-        data = request.data
+        # Quando enviamos arquivos, usamos request.data (que lida com multipart)
+        pergunta = request.data.get('pergunta')
+        descricao = request.data.get('descricao', '')
+        solucao = request.data.get('solucao')
+        midia = request.FILES.get('midia')
+        privado = request.data.get('privado') == 'true'
+        
+        # Pegar a maior ordem atual para colocar a nova pergunta no final
+        max_order = FAQ.objects.aggregate(Max('ordem'))['ordem__max'] or 0
+        
         FAQ.objects.create(
-            pergunta=data.get('pergunta'),
-            descricao=data.get('descricao', ''),
-            solucao=data.get('solucao')
+            pergunta=pergunta,
+            descricao=descricao,
+            solucao=solucao,
+            ordem=max_order + 1,
+            midia=midia,
+            privado=privado
         )
         return Response({'message': 'FAQ criado com sucesso!'}, status=201)
     except Exception as e:
@@ -129,10 +143,19 @@ def create_faq_api(request):
 def update_faq_api(request, faq_id):
     try:
         faq = FAQ.objects.get(id=faq_id)
-        data = request.data
-        faq.pergunta = data.get('pergunta', faq.pergunta)
-        faq.descricao = data.get('descricao', faq.descricao)
-        faq.solucao = data.get('solucao', faq.solucao)
+        
+        faq.pergunta = request.data.get('pergunta', faq.pergunta)
+        faq.descricao = request.data.get('descricao', faq.descricao)
+        faq.solucao = request.data.get('solucao', faq.solucao)
+        
+        if 'privado' in request.data:
+            faq.privado = request.data.get('privado') == 'true'
+        
+        if 'midia' in request.FILES:
+            faq.midia = request.FILES['midia']
+        elif request.data.get('remover_midia') == 'true':
+            faq.midia = None
+            
         faq.save()
         return Response({'message': 'FAQ atualizado com sucesso!'})
     except FAQ.DoesNotExist:
@@ -178,9 +201,21 @@ def delete_faq_api(request, faq_id):
 
 @api_view(['GET'])
 def faq_api_list_all(request):
-    faqs = FAQ.objects.all().order_by('pergunta') # Ordenar por pergunta
+    faqs = FAQ.objects.filter(privado=False).order_by('ordem') # Somente as públicas
     serializer = FAQSerializer(faqs, many=True)
     return Response(serializer.data)
+
+@api_view(['POST'])
+def reorder_faqs_api(request):
+    try:
+        faqs_data = request.data.get('faqs', [])
+        for item in faqs_data:
+            faq_id = item.get('id')
+            new_order = item.get('ordem')
+            FAQ.objects.filter(id=faq_id).update(ordem=new_order)
+        return Response({'message': 'Ordem atualizada com sucesso!'})
+    except Exception as e:
+        return Response({'error': str(e)}, status=400)
 
 # Listar e criar os FAQs (Existente)
 def faq_list(request):

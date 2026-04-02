@@ -14,6 +14,7 @@ urlpatterns = [
     path('api/faqs/create/', views.create_faq_api, name='create_faq_api'),
     path('api/faqs/update/<int:faq_id>/', views.update_faq_api, name='update_faq_api'),
     path('api/faqs/delete/<int:faq_id>/', views.delete_faq_api, name='delete_faq_api'),
+    path('api/faqs/reorder/', views.reorder_faqs_api, name='reorder_faqs_api'),
     path('api/users/delete/<int:user_id>/', views.delete_user_api, name='delete_user_api'),
     path('api/faqs/all/', views.faq_api_list_all, name='faq_api_list_all'),
     # API de Auth

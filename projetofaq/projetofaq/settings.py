@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-1ubx5@5ty37e%3w@s(9l0$4&tkb)=@!x1i)ge8cju0(p2$dicd
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['10.0.0.161', 'localhost', '127.0.0.1']
 
 CORS_ALLOW_ALL_ORIGINS = True  # Para desenvolvimento, permite todas as origens
 
@@ -117,3 +117,13 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
+
+import os
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Limite de upload (100MB por exemplo, o Django não tem um limite fixo por padrão aqui, 
+# mas é bom controlar no servidor web ou na view)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 104857600   # 100MB
+
