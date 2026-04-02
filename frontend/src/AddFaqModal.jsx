@@ -8,7 +8,8 @@ const AddFaqModal = ({ faq, onClose, onSave }) => {
     const [formData, setFormData] = useState({
         pergunta: faq?.pergunta || '',
         descricao: faq?.descricao || '',
-        solucao: faq?.solucao || ''
+        solucao: faq?.solucao || '',
+        visibilidade: faq?.privado ? 'Privado' : 'Público'
     });
     const [file, setFile] = useState(null);
     const [error, setError] = useState('');
@@ -48,7 +49,11 @@ const AddFaqModal = ({ faq, onClose, onSave }) => {
         if (error) return;
         
         // Passamos o arquivo separadamente ou dentro de um objeto
-        onSave(isEdit ? faq.id : null, { ...formData, midia: file });
+        onSave(isEdit ? faq.id : null, { 
+            ...formData, 
+            midia: file,
+            privado: formData.visibilidade === 'Privado'
+        });
     };
 
     return (
@@ -117,7 +122,21 @@ const AddFaqModal = ({ faq, onClose, onSave }) => {
                             Formatos aceitos: JPG, PNG, MP4. Limite: 100MB.
                         </p>
                     </div>
-
+                    
+                    <div className="form-group">
+                        <label htmlFor="visibilidade">Visibilidade</label>
+                        <select
+                            id="visibilidade"
+                            name="visibilidade"
+                            value={formData.visibilidade}
+                            onChange={handleChange}
+                            className="role-select"
+                        >
+                            <option value="Privado">Privado</option>
+                            <option value="Público">Público</option>
+                        </select>
+                    </div>
+                    
                     <div className="profile-actions">
                         <button type="submit" className="profile-button save">
                             {isEdit ? 'Salvar Alterações' : 'Criar FAQ'}

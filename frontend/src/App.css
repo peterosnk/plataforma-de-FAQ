@@ -221,13 +221,17 @@ body {
     }
 
     .main-nav {
-        gap: 5px;
+        gap: 8px;
         padding: 10px;
+        flex-wrap: wrap; /* Permite que os botões quebrem linha se necessário */
     }
 
     .main-nav button {
-        padding: 6px 12px;
-        font-size: 12px;
+        padding: 8px 12px;
+        font-size: 11px;
+        flex: 1 1 calc(50% - 10px); /* Dois botões por linha */
+        text-align: center;
+        min-width: 100px;
     }
 
     .question button {
@@ -246,5 +250,19 @@ body {
     .search-container:hover .search-input,
     .search-input:focus {
         width: 180px;
+    }
+
+    .faq-answer-content.show {
+        padding: 0px 10px 20px 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-nav button {
+        flex: 1 1 100%; /* Um botão por linha em telas muito pequenas */
+    }
+    
+    .title {
+        font-size: 28px;
     }
 }

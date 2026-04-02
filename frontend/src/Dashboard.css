@@ -353,16 +353,93 @@
 
 /* ========== RESPONSIVO ========== */
 @media (max-width: 768px) {
+    .dashboard-container {
+        padding: 10px;
+    }
+
     .dashboard-header {
         flex-direction: column;
         gap: 15px;
         text-align: center;
         border-left: none;
         border-top: 8px solid #0d4a83;
+        padding: 20px;
     }
 
     .dashboard-header-content h1 {
         font-size: 22px;
+    }
+
+    .dashboard-metrics {
+        grid-template-columns: 1fr; /* Uma métrica por linha */
+    }
+
+    .dashboard-metric-card {
+        padding: 15px;
+    }
+
+    .dashboard-metric-icon {
+        font-size: 30px;
+    }
+
+    .dashboard-metric-value {
+        font-size: 24px;
+    }
+
+    .dashboard-table-section {
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    /* Forçar scroll horizontal com aviso visual se necessário */
+    .dashboard-data-table {
+        min-width: 600px;
+    }
+
+    .table-header-with-action {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
+    .add-button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .modal-content {
+        padding: 20px;
+        margin: 10px;
+        max-width: 95%;
+    }
+
+    .delete-modal, .notification-modal {
+        padding: 25px 15px;
+    }
+
+    .profile-actions, .delete-actions, .notification-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .profile-button {
+        width: 100%;
+        padding: 14px;
+    }
+
+    .dashboard-actions-cell {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-header-content h1 {
+        font-size: 18px;
+    }
+    
+    .dashboard-metric-card {
+        flex-direction: column;
+        text-align: center;
     }
 }
 
@@ -465,6 +542,46 @@
 
 .profile-button.save:hover {
     background-color: #0a3a66;
+}
+
+/* ========== MODAL DE NOTIFICAÇÃO ========== */
+.notification-modal {
+    max-width: 400px !important;
+    text-align: center;
+    padding: 40px 30px;
+}
+
+.notification-icon-container {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 20px;
+}
+
+.notification-icon-container.success-bg {
+    background-color: #f0fff4;
+}
+
+.notification-icon-container.error-bg {
+    background-color: #fff5f5;
+}
+
+.success-icon {
+    font-size: 40px;
+    color: #38a169;
+}
+
+.error-icon {
+    font-size: 40px;
+    color: #e53e3e;
+}
+
+.notification-actions {
+    justify-content: center;
+    margin-top: 30px;
 }
 
 /* ========== ANIMAÇÕES ========== */

@@ -1,17 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler,
-} from 'chart.js';
-import { Line } from 'react-chartjs-2';
-import {
   DndContext, 
   closestCenter,
   KeyboardSensor,
@@ -30,6 +18,7 @@ import { CSS } from '@dnd-kit/utilities';
 import EditUserModal from './EditUserModal';
 import AddFaqModal from './AddFaqModal';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
+import NotificationModal from './NotificationModal';
 import './Dashboard.css';
 
 // Componente para a linha arrastável da tabela
@@ -56,6 +45,11 @@ const SortableFaqRow = ({ item, handleEditFaq, excluirPergunta }) => {
       <td>#{item.id}</td>
       <td>{item.pergunta}</td>
       <td>
+        <span className={`badge ${item.privado ? 'badge-visitante' : 'badge-admin'}`}>
+          {item.privado ? 'Privado' : 'Público'}
+        </span>
+      </td>
+      <td>
         <div className="dashboard-actions-cell">
           <button 
             className="dashboard-drag-handle" 
@@ -72,18 +66,6 @@ const SortableFaqRow = ({ item, handleEditFaq, excluirPergunta }) => {
     </tr>
   );
 };
-
-// Registrando componentes do Chart.js
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
-);
 
 const Dashboard = () => {
   // Estado para os dados do Dashboard
@@ -125,6 +107,14 @@ const Dashboard = () => {
     message: ''
   });
 
+  // Estados para o Modal de Notificação (Sucesso/Erro)
+  const [notification, setNotification] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'success'
+  });
+
   // Carregar dados do Backend
   const fetchData = async () => {
     try {
@@ -154,51 +144,6 @@ const Dashboard = () => {
     fetchData();
     console.log('Dashboard conectado ao backend com sucesso!');
   }, []);
-
-  // Configuração do Gráfico (Dinâmica)
-  const chartData = {
-    labels: ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'],
-    datasets: [
-      {
-        label: 'Usuários Cadastrados',
-        data: stats.chart_data,
-        borderColor: '#0d4a83',
-        backgroundColor: 'rgba(13, 74, 131, 0.1)',
-        tension: 0.4,
-        fill: true,
-        pointBackgroundColor: '#0d4a83',
-        pointBorderColor: '#fff',
-        pointBorderWidth: 2,
-        pointRadius: 6,
-        pointHoverRadius: 8,
-      },
-    ],
-  };
-
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: true,
-        labels: {
-          font: {
-            family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-            size: 14,
-          },
-          padding: 20,
-        },
-      },
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        ticks: {
-          stepSize: 20,
-        },
-      },
-    },
-  };
 
   // Funções de Ação - Perguntas
   const handleEditFaq = (faq) => {
@@ -251,6 +196,7 @@ const Dashboard = () => {
       formData.append('pergunta', faqData.pergunta);
       formData.append('descricao', faqData.descricao);
       formData.append('solucao', faqData.solucao);
+      formData.append('privado', faqData.privado);
       
       if (faqData.midia) {
         formData.append('midia', faqData.midia);
@@ -263,16 +209,32 @@ const Dashboard = () => {
       });
 
       if (response.ok) {
-        alert(faqId ? 'Pergunta atualizada!' : 'Pergunta adicionada!');
+        setNotification({
+          isOpen: true,
+          title: 'Sucesso!',
+          message: faqId ? 'Pergunta atualizada com sucesso!' : 'Nova pergunta adicionada ao FAQ!',
+          type: 'success'
+        });
         setShowAddFaqModal(false);
         setEditingFaq(null);
         fetchData();
       } else {
         const error = await response.json();
-        alert(`Erro: ${error.error}`);
+        setNotification({
+          isOpen: true,
+          title: 'Erro',
+          message: `Ocorreu um erro: ${error.error}`,
+          type: 'error'
+        });
       }
     } catch (error) {
       console.error("Erro ao salvar FAQ:", error);
+      setNotification({
+        isOpen: true,
+        title: 'Erro de Conexão',
+        message: 'Não foi possível conectar ao servidor.',
+        type: 'error'
+      });
     }
   };
 
@@ -347,16 +309,32 @@ const Dashboard = () => {
       });
 
       if (response.ok) {
-        alert(userId ? 'Usuário atualizado!' : 'Novo usuário criado!');
+        setNotification({
+          isOpen: true,
+          title: 'Sucesso!',
+          message: userId ? 'Dados do usuário atualizados!' : 'Novo usuário cadastrado no sistema!',
+          type: 'success'
+        });
         setEditingUser(null);
         setIsCreatingUser(false);
         fetchData();
       } else {
         const error = await response.json();
-        alert(`Erro: ${error.error}`);
+        setNotification({
+          isOpen: true,
+          title: 'Erro',
+          message: `Ocorreu um erro: ${error.error}`,
+          type: 'error'
+        });
       }
     } catch (error) {
       console.error("Erro na operação de usuário:", error);
+      setNotification({
+        isOpen: true,
+        title: 'Erro de Conexão',
+        message: 'Não foi possível conectar ao servidor.',
+        type: 'error'
+      });
     }
   };
 
@@ -403,16 +381,6 @@ const Dashboard = () => {
           </div>
         </section>
 
-        {/* Gráfico */}
-        <section className="dashboard-charts-section">
-          <div className="dashboard-chart-container">
-            <h2>Usuários Cadastrados - Últimos 7 Dias</h2>
-            <div className="dashboard-chart-canvas">
-              <Line data={chartData} options={chartOptions} />
-            </div>
-          </div>
-        </section>
-
         {/* Tabela de Perguntas */}
         <section className="dashboard-table-section">
           <div className="table-header-with-action">
@@ -431,6 +399,7 @@ const Dashboard = () => {
                 <tr>
                   <th>ID</th>
                   <th>Pergunta</th>
+                  <th>Visibilidade</th>
                   <th>Ações</th>
                 </tr>
               </thead>
@@ -522,6 +491,13 @@ const Dashboard = () => {
         onConfirm={confirmDelete}
         title={deleteModal.title}
         message={deleteModal.message}
+      />
+      <NotificationModal 
+        isOpen={notification.isOpen}
+        onClose={() => setNotification({ ...notification, isOpen: false })}
+        title={notification.title}
+        message={notification.message}
+        type={notification.type}
       />
     </div>
   );
