@@ -8,6 +8,47 @@ from rest_framework.response import Response
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from .serializers import FAQSerializer
+from django.conf import settings
+from openai import OpenAI
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+
+@api_view(['POST'])
+def chatbot_api(request):
+    try:
+        user_message = request.data.get('message')
+        if not user_message:
+            return Response({'error': 'Mensagem vazia'}, status=400)
+
+        # Buscar todo o FAQ para dar contexto à IA
+        faqs = FAQ.objects.filter(privado=False)
+        context = "Você é um assistente de suporte especializado nesta plataforma de FAQ. "
+        context += "Responda as dúvidas dos usuários de forma educada e baseada exclusivamente nas informações abaixo:\n\n"
+        
+        for faq in faqs:
+            context += f"Pergunta: {faq.pergunta}\nResposta: {faq.solucao}\n\n"
+
+        context += "\nSe a informação não estiver acima, diga educadamente que não possui essa informação específica e sugira entrar em contato com o suporte humano."
+
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": context},
+                {"role": "user", "content": user_message}
+            ],
+            temperature=0.7,
+            max_tokens=300
+        )
+
+        bot_response = response.choices[0].message.content
+        return Response({'response': bot_response})
+
+    except Exception as e:
+        print(f"Erro no Chatbot: {str(e)}")
+        return Response({'error': 'Erro ao processar sua dúvida com a IA'}, status=500)
 
 @api_view(['POST'])
 def login_api(request):
