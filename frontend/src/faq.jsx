@@ -1,13 +1,59 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const FAQ = () => {
   const [activeIndex, setActiveIndex] = useState(null);
   const [faqs, setFaqs] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  
+  // Chatbot states
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [messages, setMessages] = useState([
+    { role: 'bot', content: 'Olá! Sou o assistente de IA. Como posso te ajudar hoje?' }
+  ]);
+  const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const chatEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    if (isChatOpen) scrollToBottom();
+  }, [messages, isTyping, isChatOpen]);
 
   const toggleQuestion = (index) => {
     setActiveIndex(activeIndex === index ? null : index);
+  };
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+
+    const userMsg = { role: 'user', content: input };
+    setMessages(prev => [...prev, userMsg]);
+    setInput('');
+    setIsTyping(true);
+
+    try {
+      const response = await fetch('http://10.0.0.161:8000/api/chatbot/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: input })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setMessages(prev => [...prev, { role: 'bot', content: data.response }]);
+      } else {
+        setMessages(prev => [...prev, { role: 'bot', content: 'Desculpe, tive um problema ao processar sua dúvida.' }]);
+      }
+    } catch (error) {
+      setMessages(prev => [...prev, { role: 'bot', content: 'Erro de conexão com a IA.' }]);
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   // Carregar todos os FAQs do backend
@@ -99,6 +145,41 @@ const FAQ = () => {
         ) : (
           <p style={{textAlign: 'center', color: '#0d4a83'}}>Nenhuma pergunta encontrada.</p>
         )}
+      </div>
+
+      {/* Chatbot Widget */}
+      <div className="chatbot-container">
+        {isChatOpen && (
+          <div className="chatbot-window">
+            <div className="chatbot-header">
+              <h3>Suporte IA</h3>
+              <button onClick={() => setIsChatOpen(false)} style={{background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: '18px'}}>×</button>
+            </div>
+            <div className="chatbot-messages">
+              {messages.map((msg, i) => (
+                <div key={i} className={`chat-msg ${msg.role}`}>
+                  {msg.content}
+                </div>
+              ))}
+              {isTyping && <div className="typing-indicator">IA está digitando...</div>}
+              <div ref={chatEndRef} />
+            </div>
+            <form className="chatbot-input-area" onSubmit={handleSendMessage}>
+              <input 
+                type="text" 
+                placeholder="Digite sua dúvida..." 
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+              />
+              <button type="submit">
+                <i className="fas fa-paper-plane"></i>
+              </button>
+            </form>
+          </div>
+        )}
+        <button className="chatbot-button" onClick={() => setIsChatOpen(!isChatOpen)}>
+          <i className={`fas ${isChatOpen ? 'fa-times' : 'fa-robot'}`}></i>
+        </button>
       </div>
     </section>
   );
