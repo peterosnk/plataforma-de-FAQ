@@ -9,12 +9,12 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from .serializers import FAQSerializer
 from django.conf import settings
-from openai import OpenAI
+import google.generativeai as genai
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
-client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+genai.configure(api_key=os.getenv('GEMINI_KEY'))
 
 @api_view(['POST'])
 def chatbot_api(request):
@@ -31,23 +31,18 @@ def chatbot_api(request):
         for faq in faqs:
             context += f"Pergunta: {faq.pergunta}\nResposta: {faq.solucao}\n\n"
 
-        context += "\nSe a informação não estiver acima, diga educadamente que não possui essa informação específica e sugira entrar em contato com o suporte humano."
+        context += "\nSe a informação não estiver no FAQ acima, diga educadamente que não possui essa informação específica e sugira entrar em contato com o suporte humano."
 
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": context},
-                {"role": "user", "content": user_message}
-            ],
-            temperature=0.7,
-            max_tokens=300
-        )
+        # Usar o modelo estável e disponível
+        model = genai.GenerativeModel('gemini-flash-latest')
+        prompt = f"Contexto:\n{context}\n\nPergunta do usuário: {user_message}"
+        response = model.generate_content(prompt)
 
-        bot_response = response.choices[0].message.content
+        bot_response = response.text
         return Response({'response': bot_response})
 
     except Exception as e:
-        print(f"Erro no Chatbot: {str(e)}")
+        print(f"Erro no Chatbot Gemini: {str(e)}")
         return Response({'error': 'Erro ao processar sua dúvida com a IA'}, status=500)
 
 @api_view(['POST'])
