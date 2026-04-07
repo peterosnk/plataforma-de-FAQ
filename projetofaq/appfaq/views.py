@@ -1,5 +1,5 @@
 from django.shortcuts import redirect, render, get_object_or_404
-from .models import FAQ
+from .models import FAQ, HistoricoChat
 from django.db import models
 from django.db.models import Max
 from rest_framework import viewsets
@@ -32,13 +32,24 @@ def chatbot_api(request):
             context += f"Pergunta: {faq.pergunta}\nResposta: {faq.solucao}\n\n"
 
         context += "\nSe a informação não estiver no FAQ acima, diga educadamente que não possui essa informação específica e sugira entrar em contato com o suporte humano."
-
+ 
         # Usar o modelo estável e disponível
         model = genai.GenerativeModel('gemini-flash-latest')
         prompt = f"Contexto:\n{context}\n\nPergunta do usuário: {user_message}"
         response = model.generate_content(prompt)
 
         bot_response = response.text
+
+        # Salvar no Banco de Dados
+        # Como é uma API pública, o usuário pode não estar logado
+        user = request.user if request.user.is_authenticated else None
+        
+        HistoricoChat.objects.create(
+            usuario=user,
+            pergunta_usuario=user_message,
+            resposta_ia=bot_response
+        )
+
         return Response({'response': bot_response})
 
     except Exception as e:
