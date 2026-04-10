@@ -14,7 +14,10 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-genai.configure(api_key=os.getenv('GEMINI_KEY'))
+api_key = os.getenv('GEMINI_API_KEY')
+if not api_key:
+    print("AVISO: GEMINI_API_KEY não encontrada no arquivo .env!")
+genai.configure(api_key=api_key)
 
 @api_view(['POST'])
 def chatbot_api(request):
