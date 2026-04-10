@@ -120,17 +120,17 @@ const Dashboard = () => {
     try {
       setLoading(true);
       // Busca estatísticas
-      const statsRes = await fetch('http://10.0.0.161:8000/api/stats/');
+      const statsRes = await fetch('http://localhost:8000/api/stats/');
       const statsData = await statsRes.json();
       setStats(statsData);
 
       // Busca lista de FAQs
-      const faqsRes = await fetch('http://10.0.0.161:8000/api/faqs/');
+      const faqsRes = await fetch('http://localhost:8000/api/faqs/');
       const faqsData = await faqsRes.json();
       setPerguntas(faqsData);
 
       // Busca lista de Usuários
-      const usersRes = await fetch('http://10.0.0.161:8000/api/users/');
+      const usersRes = await fetch('http://localhost:8000/api/users/');
       const usersData = await usersRes.json();
       setUsuarios(usersData);
     } catch (error) {
@@ -168,7 +168,7 @@ const Dashboard = () => {
       }));
 
       try {
-        const response = await fetch('http://10.0.0.161:8000/api/faqs/reorder/', {
+        const response = await fetch('http://localhost:8000/api/faqs/reorder/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ faqs: faqsWithNewOrder }),
@@ -187,8 +187,8 @@ const Dashboard = () => {
 
   const handleSaveFaq = async (faqId, faqData) => {
     const url = faqId 
-      ? `http://10.0.0.161:8000/api/faqs/update/${faqId}/`
-      : 'http://10.0.0.161:8000/api/faqs/create/';
+      ? `http://localhost:8000/api/faqs/update/${faqId}/`
+      : 'http://localhost:8000/api/faqs/create/';
 
     try {
       // Usar FormData para enviar arquivos
@@ -261,8 +261,8 @@ const Dashboard = () => {
   const confirmDelete = async () => {
     const { type, id } = deleteModal;
     const url = type === 'faq' 
-      ? `http://10.0.0.161:8000/api/faqs/delete/${id}/`
-      : `http://10.0.0.161:8000/api/users/delete/${id}/`;
+      ? `http://localhost:8000/api/faqs/delete/${id}/`
+      : `http://localhost:8000/api/users/delete/${id}/`;
 
     try {
       const response = await fetch(url, {
@@ -298,8 +298,8 @@ const Dashboard = () => {
 
   const handleSaveUser = async (userId, userData) => {
     const url = userId 
-      ? `http://10.0.0.161:8000/api/users/update/${userId}/`
-      : 'http://10.0.0.161:8000/api/users/create/';
+      ? `http://localhost:8000/api/users/update/${userId}/`
+      : 'http://localhost:8000/api/users/create/';
     
     try {
       const response = await fetch(url, {

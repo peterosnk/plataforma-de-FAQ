@@ -36,8 +36,8 @@ const Auth = ({ onAuthSuccess }) => {
         setLoading(true);
 
         const url = isSignIn 
-            ? 'http://10.0.0.161:8000/api/login/' 
-            : 'http://10.0.0.161:8000/api/register/';
+            ? 'http://localhost:8000/api/login/' 
+            : 'http://localhost:8000/api/register/';
 
         if (!isSignIn && formData.password !== formData.confirmPassword) {
             setError('As senhas não coincidem');

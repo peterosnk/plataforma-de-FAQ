@@ -37,7 +37,7 @@ const FAQ = () => {
     setIsTyping(true);
 
     try {
-      const response = await fetch('http://10.0.0.161:8000/api/chatbot/', {
+      const response = await fetch('http://localhost:8000/api/chatbot/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: input })
@@ -60,7 +60,7 @@ const FAQ = () => {
   const fetchFaqs = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://10.0.0.161:8000/api/faqs/all/');
+      const response = await fetch('http://localhost:8000/api/faqs/all/');
       if (response.ok) {
         const data = await response.json();
         setFaqs(data);
@@ -87,7 +87,7 @@ const FAQ = () => {
     if (!midiaUrl) return null;
 
     // Ajustar URL se necessário (adicionar o host do backend)
-    const fullUrl = midiaUrl.startsWith('http') ? midiaUrl : `http://10.0.0.161:8000${midiaUrl}`;
+    const fullUrl = midiaUrl.startsWith('http') ? midiaUrl : `http://localhost:8000${midiaUrl}`;
     const isVideo = midiaUrl.toLowerCase().endsWith('.mp4');
 
     return (
